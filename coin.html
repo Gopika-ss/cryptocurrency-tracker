@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Tracker - Coin Details</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px;
+      position: relative;
+      background: #0A0A0A;
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.85);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0px 8px 20px rgba(0, 255, 170, 0.3),
+                  0px 0px 25px rgba(0, 255, 170, 0.4);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      color: #00FFD1;
+      text-shadow: 0px 0px 15px rgba(0, 255, 170, 0.8);
+      margin-bottom: 20px;
+    }
+
+    img {
+      margin: 15px 0;
+    }
+
+    p {
+      margin: 10px 0;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+ #backBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #00FFD1, #00FF85);
+      color: #000;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0px 4px 15px rgba(0, 255, 170, 0.5);
+    }
+
+    #backBtn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0px 6px 25px rgba(0, 255, 170, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="coinContainer">
+    <p>Loading coin details...</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const coinId = params.get("id");
+      const coinContainer = document.getElementById("coinContainer");
+
+      if (!coinId) {
+        coinContainer.innerHTML = "<p style='color:red;'>No coin selected.</p>";
+        return;
+      }
+
+      async function fetchCoinDetails(id) {
+        try {
+          const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
+          if (!res.ok) throw new Error("Failed to fetch coin data");
+          const coin = await res.json();
+          return coin;
+        } catch (error) {
+          coinContainer.innerHTML = "<p style='color:red;'>⚠️ Error loading coin details.</p>";
+          console.error(error);
+          return null;
+        }
+      }
+
+      function displayCoinDetails(coin) {
+        if (!coin) return;
+
+        coinContainer.innerHTML = `
+          <h2>${coin.name} (${coin.symbol.toUpperCase()})</h2>
+          <img src="${coin.image.large}" alt="${coin.name}" width="100"/>
+          <p>💲 Current Price: $${coin.market_data.current_price.usd.toLocaleString()}</p>
+          <p>🏦 Market Cap: $${coin.market_data.market_cap.usd.toLocaleString()}</p>
+          <p>📊 24h Change: ${coin.market_data.price_change_percentage_24h.toFixed(2)}%</p>
+          <p>📈 7d Change: ${coin.market_data.price_change_percentage_7d.toFixed(2)}%</p>
+          <p>📉 30d Change: ${coin.market_data.price_change_percentage_30d.toFixed(2)}%</p>
+          <p>📌 Rank: ${coin.market_cap_rank}</p>
+          <p>${coin.description.en.split('. ')[0]}.</p>
+          <button id="backBtn">⬅️ Back to Home</button>
+        `;
+
+        document.getElementById("backBtn").addEventListener("click", () => {
+          window.history.back();
+        });
+      }
+
+      async function loadCoin() {
+        const coin = await fetchCoinDetails(coinId);
+        displayCoinDetails(coin);
+      }
+
+      loadCoin();
+    });
+  </script>
+</body></html>
