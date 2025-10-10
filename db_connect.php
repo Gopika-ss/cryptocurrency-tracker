@@ -1,13 +1,13 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = ""; // use your password here
-$dbname = "crypto_db";
+$host = "sql100.infinityfree.com";
+$user = "if0_40134917";
+$pass = "G6D6zJ1Rl6tUplj"; 
+$dbname = "if0_40134917_crypto_db ";
 
-// Create connection
+
 $conn = new mysqli($host, $user, $pass, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
