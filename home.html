@@ -1,4 +1,4 @@
-0<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,13 +14,13 @@
 
     body {
       min-height: 100vh;
-      
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: flex-start;
       padding: 40px;
       position: relative;
+      background: linear-gradient(135deg, #001f1f, #002b2b, #001111);
     }
 
     body::before {
@@ -28,26 +28,26 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 0;
     }
 
     .container {
       position: relative;
       z-index: 1;
-      max-width: 1200px;
-      width: 100%;
-      background: rgba(20, 20, 20, 0.85);
-      padding: 30px;
+      width: 95%;
+      max-width: 1800px; /* Wider for full screen */
+      background: rgba(20, 20, 20, 0.9);
+      padding: 40px;
       border-radius: 20px;
-      box-shadow: 0px 8px 20px rgba(0, 255, 170, 0.3),
-     0px 0px 25px rgba(0, 255, 170, 0.4);
+      box-shadow: 0px 8px 25px rgba(0, 255, 170, 0.4),
+                  0px 0px 30px rgba(0, 255, 170, 0.3);
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 25px;
-      font-size: 2.5rem;
+      margin-bottom: 30px;
+      font-size: 2.6rem;
       color: #00FFD1;
       text-shadow: 0px 0px 15px rgba(0, 255, 170, 0.8);
     }
@@ -55,7 +55,8 @@
     .search-bar {
       display: flex;
       justify-content: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
     }
 
     .search-bar input {
@@ -96,8 +97,8 @@
 
     .crypto-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
     }
 
     .crypto-item {
@@ -139,7 +140,7 @@
     }
 
     #logoutBtn {
-      margin-top: 25px;
+      margin-top: 35px;
       display: block;
       width: 100%;
       padding: 14px;
@@ -158,11 +159,23 @@
       transform: translateY(-3px);
       box-shadow: 0px 6px 20px rgba(255, 77, 77, 0.9);
     }
+
+    @media (max-width: 768px) {
+      .search-bar input {
+        width: 100%;
+        border-radius: 12px;
+        margin-bottom: 10px;
+      }
+      .search-bar button {
+        width: 100%;
+        border-radius: 12px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📈 Cryptocurrency tracker Dashboard</h2>
+    <h2>📈 Cryptocurrency Tracker Dashboard</h2>
     
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search cryptocurrency by name or symbol..." />
@@ -175,7 +188,7 @@
   </div>
 
   <script>
-    // Check if logged in
+    // Redirect if not logged in
     if (localStorage.getItem("loggedIn") !== "true") {
       window.location.href = "login.php"; 
     }
@@ -187,7 +200,9 @@
 
     async function fetchCryptos() {
       try {
-        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false");
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+        );
         const data = await res.json();
         return data;
       } catch (error) {
@@ -198,34 +213,33 @@
     }
 
     function displayCryptos(cryptos) {
-  if (cryptos.length === 0) {
-    cryptoListEl.innerHTML = "<p>No cryptocurrencies found.</p>";
-    return;
-  }
-  cryptoListEl.innerHTML = "";
-  cryptos.forEach((coin) => {
-    const item = document.createElement("div");
-    item.classList.add("crypto-item");
-    item.innerHTML = `
-      <div class="crypto-name">
-        <img src="${coin.image}" alt="${coin.name} logo">
-        ${coin.name} (${coin.symbol.toUpperCase()})
-      </div>
-      <div>💲 Price: $${coin.current_price.toLocaleString()}</div>
-      <div>🏦 Market Cap: $${coin.market_cap.toLocaleString()}</div>
-      <div>📊 24h Change: 
-        <span class="${coin.price_change_percentage_24h > 0 ? 'price-up' : 'price-down'}">
-          ${coin.price_change_percentage_24h.toFixed(2)}%
-        </span>
-      </div>
-    `;
-    // Add click event
-    item.addEventListener("click", () => {
-      window.location.href = `coin.html?id=${coin.id}`;
-    });
-    cryptoListEl.appendChild(item);
-  });
-}
+      if (cryptos.length === 0) {
+        cryptoListEl.innerHTML = "<p>No cryptocurrencies found.</p>";
+        return;
+      }
+      cryptoListEl.innerHTML = "";
+      cryptos.forEach((coin) => {
+        const item = document.createElement("div");
+        item.classList.add("crypto-item");
+        item.innerHTML = `
+          <div class="crypto-name">
+            <img src="${coin.image}" alt="${coin.name} logo">
+            ${coin.name} (${coin.symbol.toUpperCase()})
+          </div>
+          <div>💲 Price: $${coin.current_price.toLocaleString()}</div>
+          <div>🏦 Market Cap: $${coin.market_cap.toLocaleString()}</div>
+          <div>📊 24h Change:
+            <span class="${coin.price_change_percentage_24h > 0 ? 'price-up' : 'price-down'}">
+              ${coin.price_change_percentage_24h.toFixed(2)}%
+            </span>
+          </div>
+        `;
+        item.addEventListener("click", () => {
+          window.location.href = `coin.html?id=${coin.id}`;
+        });
+        cryptoListEl.appendChild(item);
+      });
+    }
 
     let allCryptos = [];
     async function loadInitialData() {
@@ -248,11 +262,10 @@
 
     searchBtn.addEventListener("click", searchCryptos);
     searchInput.addEventListener("keyup", searchCryptos);
-    
+
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedIn");
-      window.location.href = "login.php"; // Redirect to login
-
+      window.location.href = "login.php";
     });
 
     loadInitialData();
